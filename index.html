@@ -1,0 +1,58 @@
+<html>
+<head>
+<title>Chat Client</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+<div class="container">
+<br>
+<div class="jumbotron">
+<br>
+<input id='name' type="text" class="form-control" />
+<br>
+<textarea id="message" type="text" class="form-control" ></textarea>
+<br>
+<button id="send" class="btn btn-primary">Send</button>
+</div>
+<div id="messages">
+</div>
+
+</div>
+
+<script>
+var socket=io()
+$(()=>{
+    $("#send").click(()=>{
+        console.log("clicked")
+        var message={"name": $("#name").val(),"message": $("#message").val()}
+        postMessage(message)
+    })
+    getMessage()
+})
+
+function addMessage(message){
+    $("#messages").append(`<h4> ${message.name}</h4> <h4> ${message.message}</h4>`)
+}
+
+socket.on('message',addMessage)
+function getMessage(){
+    $.get('http://localhost:3000/messages',(data)=>{
+        data.forEach(function(element){
+            addMessage(element)
+        },this)
+    })
+}
+function postMessage(message){
+    $.post('http://localhost:3000/messages',message)
+}
+</script>
+
+
+</body>
+</html>
